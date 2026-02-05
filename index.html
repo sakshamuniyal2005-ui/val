@@ -20,12 +20,12 @@
     .card {
       background: white;
       padding: 30px;
-      border-radius: 20px;
+      border-radius: 25px;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       width: 90%;
-      max-width: 360px;
-      animation: fadeIn 1.5s ease;
+      max-width: 380px;
+      animation: fadeIn 1.4s ease;
     }
 
     @keyframes fadeIn {
@@ -35,19 +35,20 @@
 
     h1 {
       color: #ff4d6d;
-      margin-bottom: 25px;
+      margin-bottom: 30px;
+      font-size: 28px;
     }
 
     .buttons {
       position: relative;
-      height: 60px;
+      height: 70px;
     }
 
     button {
-      padding: 12px 25px;
+      padding: 14px 30px;
       font-size: 16px;
       border: none;
-      border-radius: 25px;
+      border-radius: 30px;
       cursor: pointer;
       position: absolute;
       transition: all 0.4s ease;
@@ -60,22 +61,22 @@
     }
 
     .no {
-      background: #ddd;
+      background: #eee;
       right: 30px;
     }
 
     .hint {
-      font-size: 12px;
-      color: #888;
-      margin-top: 15px;
+      font-size: 13px;
+      color: #777;
+      margin-top: 20px;
     }
   </style>
 </head>
 
-<body onclick="unmuteMusic()">
+<body id="page">
 
-  <!-- Background Music (autoplay muted – browser safe) -->
-  <audio id="bgMusic" autoplay loop muted>
+  <!-- Background Music -->
+  <audio id="bgMusic" loop>
     <source src="https://files.catbox.moe/5o9x9e.mp3" type="audio/mpeg">
   </audio>
 
@@ -87,34 +88,26 @@
       <button class="no" id="noBtn">No</button>
     </div>
 
-    <div class="hint">🔊 Tap anywhere to turn on sound</div>
+    <div class="hint">🔊 Tap anywhere to play music</div>
   </div>
 
   <script>
     const music = document.getElementById("bgMusic");
+    const page = document.getElementById("page");
     const noBtn = document.getElementById("noBtn");
-    let unmuted = false;
 
-    // Smooth unmute on first click
-    function unmuteMusic() {
-      if (unmuted) return;
-      unmuted = true;
+    let musicStarted = false;
 
-      music.muted = false;
-      music.volume = 0;
+    // ✅ THIS is the key fix
+    page.addEventListener("click", () => {
+      if (!musicStarted) {
+        musicStarted = true;
+        music.volume = 0.6;
+        music.play().catch(() => {});
+      }
+    }, { once: true });
 
-      let v = 0;
-      const fade = setInterval(() => {
-        if (v < 0.6) {
-          v += 0.02;
-          music.volume = v;
-        } else {
-          clearInterval(fade);
-        }
-      }, 100);
-    }
-
-    // NO button keeps escaping forever
+    // NO button escapes forever
     noBtn.addEventListener("mouseenter", moveNo);
     noBtn.addEventListener("click", moveNo);
 
@@ -123,11 +116,8 @@
       const maxX = card.clientWidth - noBtn.offsetWidth;
       const maxY = card.clientHeight - noBtn.offsetHeight;
 
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
-
-      noBtn.style.left = x + "px";
-      noBtn.style.top = y + "px";
+      noBtn.style.left = Math.random() * maxX + "px";
+      noBtn.style.top  = Math.random() * maxY + "px";
     }
 
     function yesClick() {
