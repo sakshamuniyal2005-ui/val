@@ -25,14 +25,12 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       width: 90%;
       max-width: 360px;
-      opacity: 0;
-      transform: scale(0.9);
-      transition: all 1.5s ease;
+      animation: fadeIn 1.5s ease;
     }
 
-    .card.show {
-      opacity: 1;
-      transform: scale(1);
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
     }
 
     h1 {
@@ -65,40 +63,46 @@
       background: #ddd;
       right: 30px;
     }
+
+    .hint {
+      font-size: 12px;
+      color: #888;
+      margin-top: 15px;
+    }
   </style>
 </head>
 
-<body onclick="startExperience()">
+<body onclick="unmuteMusic()">
 
-  <!-- Background Music -->
-  <audio id="bgMusic" loop>
+  <!-- Background Music (autoplay muted – browser safe) -->
+  <audio id="bgMusic" autoplay loop muted>
     <source src="https://files.catbox.moe/5o9x9e.mp3" type="audio/mpeg">
   </audio>
 
-  <div class="card" id="card">
-    <h1>YourName, will you be my Valentine? 💖</h1>
+  <div class="card">
+    <h1>Tanya, will you be my Valentine? 💖</h1>
 
     <div class="buttons">
       <button class="yes" onclick="yesClick()">Yes</button>
       <button class="no" id="noBtn">No</button>
     </div>
+
+    <div class="hint">🔊 Tap anywhere to turn on sound</div>
   </div>
 
   <script>
     const music = document.getElementById("bgMusic");
-    const card = document.getElementById("card");
     const noBtn = document.getElementById("noBtn");
-    let started = false;
+    let unmuted = false;
 
-    function startExperience() {
-      if (started) return;
-      started = true;
+    // Smooth unmute on first click
+    function unmuteMusic() {
+      if (unmuted) return;
+      unmuted = true;
 
-      // Music start
+      music.muted = false;
       music.volume = 0;
-      music.play();
 
-      // Fade-in music
       let v = 0;
       const fade = setInterval(() => {
         if (v < 0.6) {
@@ -108,18 +112,14 @@
           clearInterval(fade);
         }
       }, 100);
-
-      // Sync animation with intro
-      setTimeout(() => {
-        card.classList.add("show");
-      }, 400);
     }
 
-    // NO button dodges forever
+    // NO button keeps escaping forever
     noBtn.addEventListener("mouseenter", moveNo);
     noBtn.addEventListener("click", moveNo);
 
     function moveNo() {
+      const card = document.querySelector(".card");
       const maxX = card.clientWidth - noBtn.offsetWidth;
       const maxY = card.clientHeight - noBtn.offsetHeight;
 
@@ -162,4 +162,3 @@
 
 </body>
 </html>
-
