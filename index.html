@@ -24,13 +24,25 @@
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       width: 90%;
-      max-width: 350px;
-      position: relative;
+      max-width: 360px;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 1.5s ease;
+    }
+
+    .card.show {
+      opacity: 1;
+      transform: scale(1);
     }
 
     h1 {
       color: #ff4d6d;
       margin-bottom: 25px;
+    }
+
+    .buttons {
+      position: relative;
+      height: 60px;
     }
 
     button {
@@ -39,45 +51,75 @@
       border: none;
       border-radius: 25px;
       cursor: pointer;
+      position: absolute;
+      transition: all 0.4s ease;
     }
 
     .yes {
       background: #ff4d6d;
       color: white;
+      left: 30px;
     }
 
     .no {
       background: #ddd;
-      position: absolute;
-      left: 20px;
-      top: 120px;
+      right: 30px;
     }
   </style>
 </head>
 
-<body>
+<body onclick="startExperience()">
 
   <!-- Background Music -->
   <audio id="bgMusic" loop>
     <source src="https://files.catbox.moe/5o9x9e.mp3" type="audio/mpeg">
   </audio>
 
-  <div class="card" onclick="playMusic()">
-    <h1>yourname, will you be my Valentine?</h1>
-    <button class="yes" onclick="yesClick()">Yes</button>
-    <button class="no" id="noBtn">No</button>
+  <div class="card" id="card">
+    <h1>YourName, will you be my Valentine? 💖</h1>
+
+    <div class="buttons">
+      <button class="yes" onclick="yesClick()">Yes</button>
+      <button class="no" id="noBtn">No</button>
+    </div>
   </div>
 
   <script>
+    const music = document.getElementById("bgMusic");
+    const card = document.getElementById("card");
     const noBtn = document.getElementById("noBtn");
-    const card = document.querySelector(".card");
-    const bgMusic = document.getElementById("bgMusic");
+    let started = false;
 
-    function playMusic() {
-      bgMusic.play();
+    function startExperience() {
+      if (started) return;
+      started = true;
+
+      // Music start
+      music.volume = 0;
+      music.play();
+
+      // Fade-in music
+      let v = 0;
+      const fade = setInterval(() => {
+        if (v < 0.6) {
+          v += 0.02;
+          music.volume = v;
+        } else {
+          clearInterval(fade);
+        }
+      }, 100);
+
+      // Sync animation with intro
+      setTimeout(() => {
+        card.classList.add("show");
+      }, 400);
     }
 
-    function randomMove() {
+    // NO button dodges forever
+    noBtn.addEventListener("mouseenter", moveNo);
+    noBtn.addEventListener("click", moveNo);
+
+    function moveNo() {
       const maxX = card.clientWidth - noBtn.offsetWidth;
       const maxY = card.clientHeight - noBtn.offsetHeight;
 
@@ -87,8 +129,6 @@
       noBtn.style.left = x + "px";
       noBtn.style.top = y + "px";
     }
-
-    setInterval(randomMove, 700);
 
     function yesClick() {
       document.body.innerHTML = `
@@ -101,11 +141,20 @@
           background:#ff9a9e;
           color:white;
           text-align:center;
-          padding:20px;
+          padding:30px;
         ">
-          <h1>Yayyy yourname! I knew it 💖</h1>
-          <img src="https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif"
-               style="width:250px; margin-top:20px; border-radius:20px;">
+          <h2>
+            From the moment you clicked YES,<br>
+            my heart smiled.<br><br>
+
+            This isn’t just a Valentine —<br>
+            it’s a promise of laughter,<br>
+            warm hugs,<br>
+            shared dreams,<br>
+            and all the little moments that truly matter.<br><br>
+
+            Thank you for choosing me. 💕
+          </h2>
         </div>
       `;
     }
@@ -113,3 +162,4 @@
 
 </body>
 </html>
+
